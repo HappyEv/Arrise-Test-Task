@@ -18,13 +18,13 @@ class TestDeleteServices:
             bear = BearServices.create(type=type, name=name, age=age)
             params = BearServices.read(bear.id)
             assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower() and bear.age == params[
-                "bear_age"], "Параметры медведя не соответствуют ожидаемым"
-        assert BearServices.delete(), "Ожидался положительный ответ от сервиса"
-        assert BearServices.read() == [], "После удаления не должно оставаться объектов медведей"
+                "bear_age"], "Unexpected bear's parameters"
+        assert BearServices.delete(), "Expected positive response"
+        assert BearServices.read() == [], "Expected empty list after deletion"
 
     def test_delete_specific(self, good_bear):
-        assert BearServices.delete(good_bear.id), "Ожидался положительный ответ от сервиса"
-        assert BearServices.read(good_bear.id) == "EMPTY", "Объект не должен существовать"
+        assert BearServices.delete(good_bear.id), "Expected positive response"
+        assert BearServices.read(good_bear.id) == "EMPTY", "Expected EMPTY response"
 
     @pytest.mark.parametrize(
         "id",
@@ -36,4 +36,4 @@ class TestDeleteServices:
         ]
     )
     def test_delete_nonexistent(self, id):
-        assert BearServices.delete(id), "Ожидался положительный ответ от сервиса"
+        assert BearServices.delete(id), "Expected positive response"

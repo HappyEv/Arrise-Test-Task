@@ -34,10 +34,10 @@ class TestUpdateServices:
         ]
     )
     def test_update_bear(self, new_params, good_bear):
-        assert BearServices.update(good_bear, new_params), "Ожидался положительный ответ от сервиса"
+        assert BearServices.update(good_bear, new_params), "Expected positive response"
         params = BearServices.read(good_bear.id)
         assert good_bear.type == params["bear_type"] and good_bear.name == params["bear_name"].lower() \
-               and good_bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
+               and good_bear.age == params["bear_age"], "Unexpected bear's parameters"
 
     @pytest.mark.parametrize(
         "new_params",
@@ -56,4 +56,4 @@ class TestUpdateServices:
         ]
     )
     def test_update_bear_failed(self, new_params, good_bear):
-        assert not BearServices.update(good_bear, new_params), "Ожидался отрицательный ответ от сервиса"
+        assert not BearServices.update(good_bear, new_params), "Expected negative response"

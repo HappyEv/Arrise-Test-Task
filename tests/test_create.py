@@ -18,7 +18,7 @@ class TestCreateServices:
             bear = BearServices.create(type=i, name=name, age=age)
             params = BearServices.read(bear.id)
             assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower() \
-                   and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
+                   and bear.age == params["bear_age"], "Unexpected bear's parameters"
 
     @pytest.mark.parametrize(
         "type, name, age",
@@ -38,5 +38,5 @@ class TestCreateServices:
     )
     def test_create_bear_failed(self, type, name, age):
         bear = BearServices.create(type=type, name=name, age=age)
-        assert bear is None, "Медвесь создался с невалидными параметрами"
-        assert BearServices.read(id) == "EMPTY", "Объект не должен существовать"
+        assert bear is None, "Bear's parameters were expected to be invalid"
+        assert BearServices.read(id) == "EMPTY", "Expected EMPTY response"

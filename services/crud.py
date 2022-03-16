@@ -6,16 +6,17 @@ from models.bear import Bear
 class BearServices:
     @staticmethod
     def create(type, name, age):
-        """Функция создает объект медведя с заданными параметрами
+        """
+        Function creates a bear object with given parameters
         Args:
-            :param type Тип медведя
-            :param name Имя медведя
-            :param age Возраст медведя
+            :param type
+            :param name
+            :param age
 
         Returns:
-            Если создание успешно:
-                bear: Объект медведя
-            Иначе None
+            If: positive response:
+                bear: Bear object
+            else: None
         """
         params = {"bear_type": type, "bear_name": name, "bear_age": age}
         response = requests.post(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"], json=params)
@@ -28,14 +29,15 @@ class BearServices:
 
     @staticmethod
     def delete(id=None):
-        """Функция удаляет объект медведя по его номеру, либо все объекты, если номер не задан
+        """
+        Function deletes a bear object with given ID, or all bears, if ID isn't specified
         Args:
-            :param id Номер медведя
+            :param id
 
         Returns:
-            Если удаление успешно:
+            If: positive response:
                 True
-            Иначе
+            Else:
                 False
         """
         if id is None:
@@ -49,15 +51,16 @@ class BearServices:
 
     @staticmethod
     def read(id=None):
-        """Функция считывает содержимое объекта медведя по его номеру, либо все объекты, если номер не задан
+        """
+        Function reads contents of a bear object with given id, or of all bears, if id not specified
         Args:
-            :param id Номер медведя
+            :param id
 
         Returns:
-            Если объект пустой:
+            If there's no object:
                 "EMPTY"
-            Иначе
-                Содержимое объекта
+            Else:
+                Bear's content
         """
         if id is None:
             response = requests.get(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"])
@@ -70,15 +73,17 @@ class BearServices:
 
     @staticmethod
     def update(bear, params):
-        """Функция обновляет содержимое объекта медведя по заданным параметрам
+        """
+        Function updated parameters of a given bear
+
         Args:
-            :param bear Объект медведя
-            :param params Параметры медведя
+            :param bear
+            :param params
 
         Returns:
-            Если обновление успешно:
+            If positive response:
                 True
-            Иначе
+            Else:
                 False
         """
         response = requests.put(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"] + "/" + str(id), json=params)
@@ -92,9 +97,10 @@ class BearServices:
 
     @staticmethod
     def info():
-        """Функция возвращает информацию об API сервиса
+        """
+        Function returns info about API
 
         Returns:
-            Содержимое текста
+            Text content
         """
         return requests.get(CONFIG["BASE_URL"] + CONFIG["INFO_ENDPOINT"]).text
