@@ -4,7 +4,7 @@ from test_data import *
 
 
 @pytest.mark.usefixtures("setup")
-class TestBearServices:
+class TestCreateServices:
     @pytest.mark.parametrize(
         "types, name, age",
         [

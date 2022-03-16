@@ -4,7 +4,7 @@ from test_data import *
 
 
 @pytest.mark.usefixtures("setup")
-class TestBearServices:
+class TestReadServices:
     def test_get_info(self):
         info = BearServices.info()
         assert info != "", "Сообщение пустое"
