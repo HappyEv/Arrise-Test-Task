@@ -5,10 +5,6 @@ from test_data import *
 
 @pytest.mark.usefixtures("setup")
 class TestBearServices:
-    def test_get_info(self):
-        info = BearServices.info()
-        assert info != "", "Сообщение пустое"
-
     @pytest.mark.parametrize(
         "types, name, age",
         [
