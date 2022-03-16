@@ -1,19 +1,19 @@
 import pytest
 from services.crud import BearServices
-from constants import BEAR_TYPES
+from test_data import *
 
 
 @pytest.mark.usefixtures("setup")
 class TestBearServices:
     def test_get_info(self):
         info = BearServices.info()
-        assert info is not None
+        assert info != "", "Сообщение пустое"
 
     @pytest.mark.parametrize(
         "types, name, age",
         [
             pytest.param(
-                BEAR_TYPES, "misha", 3
+                BEAR_TYPES, SAMPLE_NAMES[0], BEAR_AGES["valid"]
             )
         ]
     )
@@ -22,55 +22,55 @@ class TestBearServices:
             bear = BearServices.create(type=i, name=name, age=age)
             params = BearServices.read(bear.id)
             assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-                and bear.age == params["bear_age"]
+                and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
 
     @pytest.mark.parametrize(
         "type, name, age",
         [
             pytest.param(
-                "WHAT", "misha", 3
+                BEAR_TYPE_INVALID, SAMPLE_NAMES[0], BEAR_AGES["valid"]
             ),
 
             pytest.param(
-                "BLACK", "misha", "what"
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["invalid"]
             ),
 
             pytest.param(
-                "BLACK", "misha", -1
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["negative"]
             )
         ]
     )
     def test_create_bear_failed(self, type, name, age):
         bear = BearServices.create(type=type, name=name, age=age)
-        assert bear is None
+        assert bear is None, "Медвесь создался с невалидными параметрами"
 
     @pytest.mark.parametrize(
         "type, name, age, new_params",
         [
             pytest.param(
-                "BLACK", "misha", 3,
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
-                    "bear_type": "POLAR",
-                    "bear_name": "misha",
-                    "bear_age": 3
+                    "bear_type": BEAR_TYPES[1],
+                    "bear_name": SAMPLE_NAMES[0],
+                    "bear_age": BEAR_AGES["valid"]
                 }
             ),
 
             pytest.param(
-                "BLACK", "misha", 3,
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
-                    "bear_type": "BLACK",
-                    "bear_name": "sasha",
-                    "bear_age": 3
+                    "bear_type": BEAR_TYPES[0],
+                    "bear_name": SAMPLE_NAMES[1],
+                    "bear_age": BEAR_AGES["valid"]
                 }
             ),
 
             pytest.param(
-                "BLACK", "misha", 3,
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
-                    "bear_type": "BLACK",
-                    "bear_name": "misha",
-                    "bear_age": 99
+                    "bear_type": BEAR_TYPES[0],
+                    "bear_name": SAMPLE_NAMES[0],
+                    "bear_age": BEAR_AGES["valid"] + 1
                 }
             )
         ]
@@ -79,27 +79,27 @@ class TestBearServices:
         bear = BearServices.create(type=type, name=name, age=age)
         params = BearServices.read(bear.id)
         assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-               and bear.age == params["bear_age"]
+               and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
 
-        assert BearServices.update(bear, new_params)
+        assert BearServices.update(bear, new_params), "Ожидался положительный ответ от сервиса"
         params = BearServices.read(bear.id)
         assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-               and bear.age == params["bear_age"]
+               and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
 
     @pytest.mark.parametrize(
         "type, name, age, new_params",
         [
             pytest.param(
-                "BLACK", "misha", 3,
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
-                    "bear_type": "what",
+                    "bear_type": BEAR_TYPE_INVALID,
                 }
             ),
 
             pytest.param(
-                "BLACK", "misha", 3,
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
-                    "bear_age": "what"
+                    "bear_age": BEAR_AGES["invalid"]
                 }
             )
         ]
@@ -108,14 +108,14 @@ class TestBearServices:
         bear = BearServices.create(type=type, name=name, age=age)
         params = BearServices.read(bear.id)
         assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower() and bear.age == params[
-            "bear_age"]
-        assert not BearServices.update(bear, new_params)
+            "bear_age"], "Параметры медведя не соответствуют ожидаемым"
+        assert not BearServices.update(bear, new_params), "Ожидался отрицательный ответ от сервиса"
 
     @pytest.mark.parametrize(
         "type, name, age, amount",
         [
             pytest.param(
-                "BLACK", "misha", 3, 10
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"], AMOUNT_OF_BEARS
             )
         ]
     )
@@ -124,15 +124,15 @@ class TestBearServices:
             bear = BearServices.create(type=type, name=name, age=age)
             params = BearServices.read(bear.id)
             assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower() and bear.age == params[
-                "bear_age"]
-        assert BearServices.delete()
-        assert BearServices.read() == []
+                "bear_age"], "Параметры медведя не соответствуют ожидаемым"
+        assert BearServices.delete(), "Ожидался положительный ответ от сервиса"
+        assert BearServices.read() == [], "После удаления не должно оставаться объектов медведей"
 
     @pytest.mark.parametrize(
         "type, name, age",
         [
             pytest.param(
-                "BLACK", "misha", 3
+                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"]
             )
         ]
     )
@@ -140,32 +140,32 @@ class TestBearServices:
         bear = BearServices.create(type=type, name=name, age=age)
         params = BearServices.read(bear.id)
         assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-               and bear.age == params["bear_age"]
-        assert BearServices.delete(bear.id) is True
-        assert BearServices.read(bear.id) == "EMPTY"
+               and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
+        assert BearServices.delete(bear.id), "Ожидался положительный ответ от сервиса"
+        assert BearServices.read(bear.id) == "EMPTY", "Объект не должен существовать"
 
     @pytest.mark.parametrize(
         "id",
         [
-            pytest.param(-1),
-            pytest.param(0),
-            pytest.param(1),
-            pytest.param("abc"),
+            pytest.param(IDS["positive"]),
+            pytest.param(IDS["zero"]),
+            pytest.param(IDS["negative"]),
+            pytest.param(IDS["string"]),
         ]
     )
     def test_delete_nonexistent(self, id):
-        assert BearServices.delete(id)
+        assert BearServices.delete(id), "Ожидался положительный ответ от сервиса"
 
     @pytest.mark.parametrize(
         "id",
         [
-            pytest.param(-1),
-            pytest.param(0),
-            pytest.param(1),
-            pytest.param("abc"),
+            pytest.param(IDS["positive"]),
+            pytest.param(IDS["zero"]),
+            pytest.param(IDS["negative"]),
+            pytest.param(IDS["string"]),
         ]
     )
     def test_read_nonexistent(self, id):
-        assert BearServices.read(id) == "EMPTY"
+        assert BearServices.read(id) == "EMPTY", "Объект не должен существовать"
 
 

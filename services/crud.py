@@ -1,5 +1,5 @@
 import requests
-from constants import BASE_URL
+from config import CONFIG
 from models.bear import Bear
 
 
@@ -18,7 +18,7 @@ class BearServices:
             Иначе None
         """
         params = {"bear_type": type, "bear_name": name, "bear_age": age}
-        response = requests.post(BASE_URL + "bear", json=params)
+        response = requests.post(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"], json=params)
         if response:
             id = int(response.text)
             bear = Bear(id=id, age=age, name=name, type=type)
@@ -39,9 +39,9 @@ class BearServices:
                 False
         """
         if id is None:
-            response = requests.delete(BASE_URL + "bear")
+            response = requests.delete(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"])
         else:
-            response = requests.delete(BASE_URL + "bear/" + str(id))
+            response = requests.delete(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"] + "/" + str(id))
         if response:
             return True
         else:
@@ -60,9 +60,9 @@ class BearServices:
                 Содержимое объекта
         """
         if id is None:
-            response = requests.get(BASE_URL + "bear")
+            response = requests.get(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"])
         else:
-            response = requests.get(BASE_URL + "bear/" + str(id))
+            response = requests.get(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"] + "/" + str(id))
         if response.text == "EMPTY":
             return response.text
         else:
@@ -81,7 +81,7 @@ class BearServices:
             Иначе
                 False
         """
-        response = requests.put(BASE_URL + "bear/" + str(bear.id), json=params)
+        response = requests.put(CONFIG["BASE_URL"] + CONFIG["BEAR_ENDPOINT"] + "/" + str(id), json=params)
         if response:
             bear.type = params["bear_type"]
             bear.name = params["bear_name"]
@@ -97,4 +97,4 @@ class BearServices:
         Returns:
             Содержимое текста
         """
-        return requests.get(BASE_URL + "info").text
+        return requests.get(CONFIG["BASE_URL"] + CONFIG["INFO_ENDPOINT"]).text
