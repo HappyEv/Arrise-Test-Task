@@ -21,8 +21,8 @@ class TestBearServices:
         for i in types:
             bear = BearServices.create(type=i, name=name, age=age)
             params = BearServices.read(bear.id)
-            assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-                and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
+            assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower() \
+                   and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
 
     @pytest.mark.parametrize(
         "type, name, age",
@@ -45,10 +45,9 @@ class TestBearServices:
         assert bear is None, "Медвесь создался с невалидными параметрами"
 
     @pytest.mark.parametrize(
-        "type, name, age, new_params",
+        "new_params",
         [
             pytest.param(
-                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
                     "bear_type": BEAR_TYPES[1],
                     "bear_name": SAMPLE_NAMES[0],
@@ -57,7 +56,6 @@ class TestBearServices:
             ),
 
             pytest.param(
-                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
                     "bear_type": BEAR_TYPES[0],
                     "bear_name": SAMPLE_NAMES[1],
@@ -66,7 +64,6 @@ class TestBearServices:
             ),
 
             pytest.param(
-                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
                     "bear_type": BEAR_TYPES[0],
                     "bear_name": SAMPLE_NAMES[0],
@@ -75,41 +72,30 @@ class TestBearServices:
             )
         ]
     )
-    def test_update_bear(self, type, name, age, new_params):
-        bear = BearServices.create(type=type, name=name, age=age)
-        params = BearServices.read(bear.id)
-        assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-               and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
-
-        assert BearServices.update(bear, new_params), "Ожидался положительный ответ от сервиса"
-        params = BearServices.read(bear.id)
-        assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-               and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
+    def test_update_bear(self, new_params, good_bear):
+        assert BearServices.update(good_bear, new_params), "Ожидался положительный ответ от сервиса"
+        params = BearServices.read(good_bear.id)
+        assert good_bear.type == params["bear_type"] and good_bear.name == params["bear_name"].lower() \
+               and good_bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
 
     @pytest.mark.parametrize(
-        "type, name, age, new_params",
+        "new_params",
         [
             pytest.param(
-                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
                     "bear_type": BEAR_TYPE_INVALID,
                 }
             ),
 
             pytest.param(
-                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"],
                 {
                     "bear_age": BEAR_AGES["invalid"]
                 }
             )
         ]
     )
-    def test_update_bear_failed(self, type, name, age, new_params):
-        bear = BearServices.create(type=type, name=name, age=age)
-        params = BearServices.read(bear.id)
-        assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower() and bear.age == params[
-            "bear_age"], "Параметры медведя не соответствуют ожидаемым"
-        assert not BearServices.update(bear, new_params), "Ожидался отрицательный ответ от сервиса"
+    def test_update_bear_failed(self, new_params, good_bear):
+        assert not BearServices.update(good_bear, new_params), "Ожидался отрицательный ответ от сервиса"
 
     @pytest.mark.parametrize(
         "type, name, age, amount",
@@ -128,21 +114,9 @@ class TestBearServices:
         assert BearServices.delete(), "Ожидался положительный ответ от сервиса"
         assert BearServices.read() == [], "После удаления не должно оставаться объектов медведей"
 
-    @pytest.mark.parametrize(
-        "type, name, age",
-        [
-            pytest.param(
-                BEAR_TYPES[0], SAMPLE_NAMES[0], BEAR_AGES["valid"]
-            )
-        ]
-    )
-    def test_delete_specific(self, type, name, age):
-        bear = BearServices.create(type=type, name=name, age=age)
-        params = BearServices.read(bear.id)
-        assert bear.type == params["bear_type"] and bear.name == params["bear_name"].lower()\
-               and bear.age == params["bear_age"], "Параметры медведя не соответствуют ожидаемым"
-        assert BearServices.delete(bear.id), "Ожидался положительный ответ от сервиса"
-        assert BearServices.read(bear.id) == "EMPTY", "Объект не должен существовать"
+    def test_delete_specific(self, good_bear):
+        assert BearServices.delete(good_bear.id), "Ожидался положительный ответ от сервиса"
+        assert BearServices.read(good_bear.id) == "EMPTY", "Объект не должен существовать"
 
     @pytest.mark.parametrize(
         "id",
@@ -167,5 +141,3 @@ class TestBearServices:
     )
     def test_read_nonexistent(self, id):
         assert BearServices.read(id) == "EMPTY", "Объект не должен существовать"
-
-
